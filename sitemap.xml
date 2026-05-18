@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- English pages -->
+  <url>
+    <loc>https://wsd-research-portal.replit.app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/world-succession-deed</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/world-succession-deed"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/world-succession-deed_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/juridical-singularity</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/juridical-singularity"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/juridical-singularity_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/electric-technocracy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/electric-technocracy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/electric-technocracy_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/kreuzbergkaserne</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/kreuzbergkaserne"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/kreuzbergkaserne_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/age-of-transition</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/age-of-transition"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/age-of-transition_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/micronation</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/micronation"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/micronation_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/sources</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/sources"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/sources_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/faq_de"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- German pages -->
+  <url>
+    <loc>https://wsd-research-portal.replit.app/_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/world-succession-deed_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/world-succession-deed_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/world-succession-deed"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/juridical-singularity_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/juridical-singularity_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/juridical-singularity"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/electric-technocracy_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/electric-technocracy_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/electric-technocracy"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/kreuzbergkaserne_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/kreuzbergkaserne_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/kreuzbergkaserne"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/age-of-transition_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/age-of-transition_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/age-of-transition"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/micronation_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/micronation_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/micronation"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/sources_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/sources_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/sources"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://wsd-research-portal.replit.app/faq_de</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wsd-research-portal.replit.app/faq_de"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wsd-research-portal.replit.app/faq"/>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
