@@ -1,6 +1,6 @@
-Date Built: 2026-05-22T01:03:28.639Z
+Date Built: 2026-05-22T02:04:03.910Z
     
-VERCEL_GIT_COMMIT_SHA: ca00aa89a7b4a3354f0fef492ab94ecbd6558f23
-VERCEL_GIT_COMMIT_MESSAGE: Merge pull request #3912 from MindsmithAI/codex/remove-dead-code-groups
+VERCEL_GIT_COMMIT_SHA: 9823bbf004d905583c335e45b195e5807e96f47c
+VERCEL_GIT_COMMIT_MESSAGE: Merge pull request #3862 from MindsmithAI/make-sonnet-not-based-opus
 
-[codex] remove dead code groups
+Make sonnet pricing not based on Opus pricing
