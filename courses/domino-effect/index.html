@@ -53,6 +53,20 @@
         top: 0px;
       }
 
+      /* ── Hide Mindsmith "Built with" badge ── */
+      a[href*="mindsmith.ai"],
+      a[href*="utm_source=powered_by_badge"],
+      [class*="powered"],
+      [class*="Powered"],
+      [class*="built-with"],
+      [class*="BuiltWith"],
+      [class*="badge"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
       /* Back Home Button – injected into sidebar */
       #back-home-btn {
         display: flex;
@@ -81,9 +95,32 @@
         opacity: 0.85;
       }</style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
 
-<!-- Back Home Button: injected into the sidebar after React renders -->
+<!-- Remove Mindsmith badge + inject Back Home button -->
 <script>
 (function () {
+
+  /* ── 1. Remove "Built with mindsmith" badge ── */
+  function removeBadge() {
+    // Remove any <a> linking to mindsmith.ai or the powered_by_badge param
+    document.querySelectorAll('a[href*="mindsmith.ai"], a[href*="powered_by_badge"]').forEach(function (el) {
+      // Walk up to remove the nearest containing wrapper if small
+      var parent = el.parentElement;
+      if (parent && parent !== document.body && parent.children.length === 1) {
+        parent.remove();
+      } else {
+        el.remove();
+      }
+    });
+    // Also remove by common text content
+    document.querySelectorAll('a, span, div, p').forEach(function (el) {
+      if (el.textContent && el.textContent.trim().toLowerCase().indexOf('built with') !== -1 &&
+          el.innerHTML && el.innerHTML.toLowerCase().indexOf('mindsmith') !== -1) {
+        el.remove();
+      }
+    });
+  }
+
+  /* ── 2. Back Home button ── */
   var HOME_URL = "https://singularity41.wordpress.com/";
 
   var SIDEBAR_SELECTORS = [
@@ -120,6 +157,7 @@
   }
 
   function inject() {
+    removeBadge();
     if (document.getElementById("back-home-btn")) return;
     var sidebar = findSidebar();
     if (!sidebar) return;
@@ -136,13 +174,17 @@
     }
   }, 100);
 
+  // Keep watching – badge may re-render after route changes
   var observer = new MutationObserver(function () {
+    removeBadge();
     if (!document.getElementById("back-home-btn")) {
       inject();
     }
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
 })();
 </script>
 
 </body></html>
+
