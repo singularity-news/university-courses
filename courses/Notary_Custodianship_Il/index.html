@@ -1,4 +1,11 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Notary Custodianship in International Law</title><link rel="icon" href="assets/favicon.ico" sizes="any" type="image/x-icon"/><link rel="icon" href="assets/favicon-32x32.png" sizes="32x32" type="image/png"/><link rel="icon" href="assets/favicon-16x16.png" sizes="16x16" type="image/png"/><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/><link rel="stylesheet" href="assets/fonts/fonts.css"/><script src="fonts-list.js"></script><script>function preloadFonts(fontsList) {
+
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Notary Custodianship in International Law</title>
+
+<!-- SEO Meta Tags -->
+<meta name="description" content="Notary Custodianship in International Law explores global standards for document custody, authentication, and legal compliance. Learn how notarial systems operate across borders, ensuring integrity, verification, and international legal validity."/>
+<meta name="keywords" content="notary custodianship, international law, legal custody, document authentication, cross-border notarization, international treaties, legal compliance, notarial authority, custody procedures, global governance, legal frameworks, international documentation, verification standards, notary systems, transnational law, legal certification, archival integrity, jurisdictional rules, legal safeguards, institutional law, World Succession Deed"/>
+
+<link rel="icon" href="assets/favicon.ico" sizes="any" type="image/x-icon"/><link rel="icon" href="assets/favicon-32x32.png" sizes="32x32" type="image/png"/><link rel="icon" href="assets/favicon-16x16.png" sizes="16x16" type="image/png"/><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/><link rel="stylesheet" href="assets/fonts/fonts.css"/><script src="fonts-list.js"></script><script>function preloadFonts(fontsList) {
         const head = document.head || document.getElementsByTagName("head")[0];
 
         fontsList.forEach((url) => {
@@ -45,4 +52,149 @@
         right: 0;
         bottom: 0;
         top: 0px;
-      }</style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script></body></html>
+      }
+
+      /* Hide Mindsmith badge */
+      a[href*="mindsmith.ai"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+
+      /* Back Home – styled as native sidebar nav item */
+      #back-home-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        color: inherit;
+        font: inherit;
+        font-size: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        text-align: left;
+        opacity: 0.85;
+        transition: opacity 0.2s ease, background 0.2s ease;
+      }
+      #back-home-btn:hover {
+        opacity: 1;
+        background: rgba(255,255,255,0.08);
+      }
+      #back-home-btn svg {
+        flex-shrink: 0;
+      }
+      #back-home-li {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border-top: 1px solid rgba(255,255,255,0.12);
+      }
+</style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
+
+<!-- Back Home button injected into sidebar nav list -->
+<script>
+(function () {
+  'use strict';
+
+  var HOME_URL = "https://singularity41.wordpress.com/";
+
+  /* ── Badge removal (hide only, no DOM removal) ── */
+  function removeBadge() {
+    try {
+      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
+        try {
+          if (!a.isConnected) return;
+          a.style.setProperty('display',    'none',   'important');
+          a.style.setProperty('visibility', 'hidden', 'important');
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+
+  /* ── Create the Back Home anchor ── */
+  function createButton() {
+    var a = document.createElement('a');
+    a.id     = 'back-home-btn';
+    a.href   = HOME_URL;
+    a.target = '_blank';
+    a.rel    = 'noopener noreferrer';
+    a.setAttribute('aria-label', 'Back to Home');
+    a.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2"' +
+      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+      '<span>Back Home</span>';
+    return a;
+  }
+
+  /* ── Find innermost nav list inside sidebar ── */
+  var SIDEBAR_SELECTORS = [
+    '[class*="sidebar"]', '[class*="Sidebar"]',
+    '[class*="side-bar"]', '[class*="side_bar"]',
+    '[class*="nav-panel"]', '[class*="NavPanel"]',
+    '[class*="drawer"]',   '[class*="Drawer"]',
+    'nav', '[role="navigation"]'
+  ];
+
+  function findNavContainer() {
+    for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
+      try {
+        var sidebar = document.querySelector(SIDEBAR_SELECTORS[i]);
+        if (!sidebar) continue;
+        var list = sidebar.querySelector('ul, ol');
+        if (list) return { container: list, asList: true };
+        return { container: sidebar, asList: false };
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  /* ── Inject button as last item in nav list ── */
+  function inject() {
+    removeBadge();
+    if (document.getElementById('back-home-btn')) return;
+    var found = findNavContainer();
+    if (!found) return;
+    var btn = createButton();
+    if (found.asList) {
+      var li = document.createElement('li');
+      li.id = 'back-home-li';
+      li.appendChild(btn);
+      found.container.appendChild(li);
+    } else {
+      found.container.appendChild(btn);
+    }
+  }
+
+  /* ── Poll until React has rendered the sidebar ── */
+  var attempts = 0;
+  var pollTimer = setInterval(function () {
+    attempts++;
+    inject();
+    if (document.getElementById('back-home-btn') || attempts >= 60) {
+      clearInterval(pollTimer);
+    }
+  }, 100);
+
+  /* ── MutationObserver (debounced) ── */
+  var debounceTimer = null;
+  var observer = new MutationObserver(function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      removeBadge();
+      if (!document.getElementById('back-home-btn')) inject();
+    }, 150);
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+})();
+</script>
+
+</body></html>
