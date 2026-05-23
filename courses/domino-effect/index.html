@@ -7,173 +7,161 @@
 
 <link rel="icon" href="assets/favicon.ico" sizes="any" type="image/x-icon"/><link rel="icon" href="assets/favicon-32x32.png" sizes="32x32" type="image/png"/><link rel="icon" href="assets/favicon-16x16.png" sizes="16x16" type="image/png"/><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/><link rel="stylesheet" href="assets/fonts/fonts.css"/><script src="fonts-list.js"></script><script>function preloadFonts(fontsList) {
         const head = document.head || document.getElementsByTagName("head")[0];
-
         fontsList.forEach((url) => {
           const link = document.createElement("link");
-          link.rel = "preload";
-          link.href = url;
-          link.as = "font";
-          link.crossOrigin = "anonymous";
-
+          link.rel = "preload"; link.href = url; link.as = "font"; link.crossOrigin = "anonymous";
           const ext = url.split(".").pop().toLowerCase();
           switch (ext) {
-            case "woff":   link.type = "font/woff";  break;
-            case "woff2":  link.type = "font/woff2"; break;
-            case "ttf":    link.type = "font/ttf";   break;
-            case "otf":    link.type = "font/otf";   break;
-            default:       link.type = "font/ttf";
+            case "woff":  link.type = "font/woff";  break;
+            case "woff2": link.type = "font/woff2"; break;
+            case "ttf":   link.type = "font/ttf";   break;
+            case "otf":   link.type = "font/otf";   break;
+            default:      link.type = "font/ttf";
           }
           head.appendChild(link);
         });
       }
-      preloadFonts(fontsList);</script><style>body,
-      html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      #content {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: 0px;
-      }
+      preloadFonts(fontsList);</script><style>body,html{margin:0;padding:0;height:100%;overflow:hidden}
+      #content{position:absolute;left:0;right:0;bottom:0;top:0}
 
       /* Hide Mindsmith badge */
-      a[href*="mindsmith.ai"] {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-      }
+      a[href*="mindsmith.ai"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 
-      /* Back Home Button – sits at very bottom of sidebar */
-      #back-home-btn {
-        display: flex !important;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px 16px;
-        background: transparent;
-        border: none;
-        border-top: 1px solid rgba(255,255,255,0.15);
-        color: inherit;
-        font: inherit;
-        font-size: inherit;
-        text-decoration: none;
-        cursor: pointer;
-        text-align: left;
-        opacity: 0.85;
-        flex-shrink: 0;
-        transition: opacity 0.2s ease, background 0.2s ease;
+      /* Back Home button */
+      #back-home-btn{
+        display:flex!important;
+        align-items:center;
+        gap:10px;
+        width:100%;
+        box-sizing:border-box;
+        padding:12px 16px;
+        background:transparent;
+        color:inherit;
+        font:inherit;
+        font-size:inherit;
+        text-decoration:none;
+        cursor:pointer;
+        text-align:left;
+        opacity:0.85;
+        flex-shrink:0;
+        border:none;
+        border-top:1px solid rgba(255,255,255,0.15);
+        /* Stick to bottom inside any scrollable sidebar */
+        position:sticky;
+        bottom:0;
+        transition:opacity .2s,background .2s;
       }
-      #back-home-btn:hover {
-        opacity: 1;
-        background: rgba(255,255,255,0.08);
-      }
-      #back-home-btn svg {
-        flex-shrink: 0;
-      }
-</style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
+      #back-home-btn:hover{opacity:1;background:rgba(255,255,255,0.08)}
+      #back-home-btn svg{flex-shrink:0}
+</style><link href="course.css" rel="stylesheet"></head><body>
+<script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script>
+<script src="course-data.js"></script>
+<script src="languages.js"></script>
+<script src="static-learner-strings.js"></script>
+<div id="root"></div>
+<script defer="defer" src="course.js"></script>
 
-<!-- Back Home button – always last child of sidebar container -->
 <script>
-(function () {
+(function(){
   'use strict';
-
   var HOME_URL = "https://singularity41.wordpress.com/";
 
   /* ── Badge removal ── */
-  function removeBadge() {
-    try {
-      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
-        try {
-          if (!a.isConnected) return;
-          a.style.setProperty('display',    'none',   'important');
-          a.style.setProperty('visibility', 'hidden', 'important');
-        } catch (e) {}
+  function removeBadge(){
+    try{
+      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function(a){
+        try{
+          if(!a.isConnected)return;
+          a.style.setProperty('display','none','important');
+          a.style.setProperty('visibility','hidden','important');
+        }catch(e){}
       });
-    } catch (e) {}
+    }catch(e){}
   }
 
   /* ── Create button ── */
-  function createButton() {
-    var a = document.createElement('a');
-    a.id     = 'back-home-btn';
-    a.href   = HOME_URL;
-    a.target = '_blank';
-    a.rel    = 'noopener noreferrer';
-    a.setAttribute('aria-label', 'Back to Home');
-    a.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
-      ' fill="none" stroke="currentColor" stroke-width="2"' +
-      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
-      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+  function createButton(){
+    var a=document.createElement('a');
+    a.id='back-home-btn';
+    a.href=HOME_URL;
+    a.target='_blank';
+    a.rel='noopener noreferrer';
+    a.setAttribute('aria-label','Back to Home');
+    a.innerHTML=
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"'+
+      ' fill="none" stroke="currentColor" stroke-width="2"'+
+      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'+
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>'+
       '<span>Back Home</span>';
     return a;
   }
 
-  /* ── Find sidebar CONTAINER (not inner <ul>) ── */
-  var SIDEBAR_SELECTORS = [
-    '[class*="sidebar"]', '[class*="Sidebar"]',
-    '[class*="side-bar"]', '[class*="side_bar"]',
-    '[class*="nav-panel"]', '[class*="NavPanel"]',
-    '[class*="drawer"]',   '[class*="Drawer"]',
-    'nav', '[role="navigation"]'
+  /* ── Find sidebar ── */
+  var SELECTORS=[
+    '[class*="sidebar"]','[class*="Sidebar"]',
+    '[class*="side-bar"]','[class*="side_bar"]',
+    '[class*="nav-panel"]','[class*="NavPanel"]',
+    '[class*="drawer"]','[class*="Drawer"]',
+    'nav','[role="navigation"]'
   ];
 
-  function findSidebar() {
-    for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
-      try {
-        var el = document.querySelector(SIDEBAR_SELECTORS[i]);
-        if (el) return el;
-      } catch (e) {}
+  function findSidebar(){
+    for(var i=0;i<SELECTORS.length;i++){
+      try{var el=document.querySelector(SELECTORS[i]);if(el)return el;}catch(e){}
     }
     return null;
   }
 
-  /* ── Always keep button as the LAST child of the sidebar ── */
-  function ensureButtonAtBottom() {
+  /*
+   * Key strategy:
+   * 1. Find the <ul> inside the sidebar (React controls this list)
+   * 2. Insert the button as a SIBLING *after* the <ul>, not inside it
+   *    → React cannot push it around because it doesn't own that slot
+   * 3. If no <ul>, fall back to appending to the sidebar container
+   * 4. Observer re-checks: if button is no longer the last child, move it back
+   */
+  function ensureButtonAtBottom(){
     removeBadge();
-    var sidebar = findSidebar();
-    if (!sidebar) return;
+    var sidebar=findSidebar();
+    if(!sidebar)return;
 
-    var existing = document.getElementById('back-home-btn');
-    if (existing) {
-      // Already last child → nothing to do
-      if (sidebar.lastElementChild === existing) return;
-      // React pushed new items after it → move back to end
-      sidebar.appendChild(existing);
-    } else {
-      sidebar.appendChild(createButton());
+    var existing=document.getElementById('back-home-btn');
+
+    // Find the nav <ul> / <ol> that React renders lesson items into
+    var navList=sidebar.querySelector('ul,ol');
+
+    // Target parent: either the ul's parent (to be a sibling after ul)
+    // or the sidebar itself
+    var target=navList ? navList.parentElement : sidebar;
+    if(!target)target=sidebar;
+
+    if(existing){
+      // Already in correct spot?
+      if(target.lastElementChild===existing)return;
+      // Re-append to end
+      target.appendChild(existing);
+    }else{
+      target.appendChild(createButton());
     }
   }
 
-  /* ── Poll until sidebar is rendered by React ── */
-  var attempts = 0;
-  var pollTimer = setInterval(function () {
+  /* ── Poll ── */
+  var attempts=0;
+  var poll=setInterval(function(){
     attempts++;
     ensureButtonAtBottom();
-    if (document.getElementById('back-home-btn') || attempts >= 60) {
-      clearInterval(pollTimer);
-    }
-  }, 100);
+    if(document.getElementById('back-home-btn')||attempts>=80){clearInterval(poll);}
+  },100);
 
-  /* ── MutationObserver: re-check on every DOM change ──
-     Catches React inserting new <li> items after our button */
-  var debounceTimer = null;
-  var observer = new MutationObserver(function () {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(ensureButtonAtBottom, 100);
+  /* ── Observer: fires whenever React mutates the sidebar list ── */
+  var dbt=null;
+  var obs=new MutationObserver(function(){
+    clearTimeout(dbt);
+    dbt=setTimeout(ensureButtonAtBottom,80);
   });
-
-  observer.observe(document.body, { childList: true, subtree: true });
+  obs.observe(document.body,{childList:true,subtree:true});
 
 })();
 </script>
-
 </body></html>
