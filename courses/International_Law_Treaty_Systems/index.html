@@ -20,11 +20,16 @@
           head.appendChild(link);
         });
       }
-      preloadFonts(fontsList);</script><style>body,html{margin:0;padding:0;height:100%;overflow:hidden}
+      preloadFonts(fontsList);</script><style>
+      body,html{margin:0;padding:0;height:100%;overflow:hidden}
       #content{position:absolute;left:0;right:0;bottom:0;top:0}
 
       /* Hide Mindsmith badge */
-      a[href*="mindsmith.ai"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+      a[href*="mindsmith.ai"]{
+        display:none!important;
+        visibility:hidden!important;
+        pointer-events:none!important;
+      }
 
       /* Back Home button */
       #back-home-btn{
@@ -45,9 +50,7 @@
         flex-shrink:0;
         border:none;
         border-top:1px solid rgba(255,255,255,0.15);
-        position:sticky;
-        bottom:0;
-        transition:opacity .2s,background .2s;
+        transition:opacity .2s, background .2s;
       }
       #back-home-btn:hover{opacity:1;background:rgba(255,255,255,0.08)}
       #back-home-btn svg{flex-shrink:0}
@@ -64,92 +67,98 @@
   'use strict';
   var HOME_URL = "https://singularity41.wordpress.com/";
 
-  /* ── Badge removal ── */
-  function removeBadge(){
-    try{
-      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function(a){
-        try{
-          if(!a.isConnected)return;
-          a.style.setProperty('display','none','important');
-          a.style.setProperty('visibility','hidden','important');
-        }catch(e){}
-      });
-    }catch(e){}
-  }
-
-  /* ── Create button ── */
   function createButton(){
-    var a=document.createElement('a');
-    a.id='back-home-btn';
-    a.href=HOME_URL;
-    a.target='_blank';
-    a.rel='noopener noreferrer';
-    a.setAttribute('aria-label','Back to Home');
-    a.innerHTML=
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"'+
-      ' fill="none" stroke="currentColor" stroke-width="2"'+
-      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+
-      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'+
-      '<polyline points="9 22 9 12 15 12 15 22"/></svg>'+
+    var a = document.createElement('a');
+    a.id = 'back-home-btn';
+    a.href = HOME_URL;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.setAttribute('aria-label', 'Back to Home');
+    a.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2"' +
+      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
       '<span>Back Home</span>';
     return a;
   }
 
-  /* ── Find sidebar ── */
-  var SELECTORS=[
-    '[class*="sidebar"]','[class*="Sidebar"]',
-    '[class*="side-bar"]','[class*="side_bar"]',
-    '[class*="nav-panel"]','[class*="NavPanel"]',
-    '[class*="drawer"]','[class*="Drawer"]',
-    'nav','[role="navigation"]'
-  ];
-
-  function findSidebar(){
-    for(var i=0;i<SELECTORS.length;i++){
-      try{var el=document.querySelector(SELECTORS[i]);if(el)return el;}catch(e){}
-    }
-    return null;
+  function hideBadge(a){
+    a.style.setProperty('display','none','important');
+    a.style.setProperty('visibility','hidden','important');
   }
 
   /*
-   * Button is inserted as SIBLING *after* the <ul> React controls,
-   * not inside it – so React cannot push it around.
-   * Observer re-checks and moves it back to last position if needed.
+   * Strategy: the Mindsmith badge <a href*="mindsmith.ai"> is already
+   * rendered at the very bottom of the sidebar by Mindsmith itself.
+   * We replace it in-place with our Back Home button.
+   * This guarantees the button ends up exactly where the badge was – bottom.
+   *
+   * Fallback: if badge not found yet, append to the last known sidebar el.
    */
-  function ensureButtonAtBottom(){
-    removeBadge();
-    var sidebar=findSidebar();
-    if(!sidebar)return;
+  function inject(){
+    if(document.getElementById('back-home-btn')) return;
 
-    var existing=document.getElementById('back-home-btn');
-    var navList=sidebar.querySelector('ul,ol');
-    var target=navList ? navList.parentElement : sidebar;
-    if(!target)target=sidebar;
+    // PRIMARY: find the badge and replace it in-place
+    var badge = document.querySelector('a[href*="mindsmith.ai"]');
+    if(badge){
+      hideBadge(badge);
+      var btn = createButton();
+      // Insert our button right before the (now hidden) badge
+      badge.parentNode.insertBefore(btn, badge);
+      return;
+    }
 
-    if(existing){
-      if(target.lastElementChild===existing)return;
-      target.appendChild(existing);
-    }else{
-      target.appendChild(createButton());
+    // FALLBACK: badge not rendered yet – append to sidebar container
+    var SELECTORS = [
+      '[class*="sidebar"]','[class*="Sidebar"]',
+      '[class*="side-bar"]','[class*="side_bar"]',
+      '[class*="nav-panel"]','[class*="NavPanel"]',
+      '[class*="drawer"]','[class*="Drawer"]',
+      'nav','[role="navigation"]'
+    ];
+    for(var i=0; i<SELECTORS.length; i++){
+      try{
+        var el = document.querySelector(SELECTORS[i]);
+        if(el){ el.appendChild(createButton()); return; }
+      }catch(e){}
     }
   }
 
-  /* ── Poll until React has rendered the sidebar ── */
-  var attempts=0;
-  var poll=setInterval(function(){
-    attempts++;
-    ensureButtonAtBottom();
-    if(document.getElementById('back-home-btn')||attempts>=80){clearInterval(poll);}
-  },100);
+  /* Hide any badge that appears (even after re-renders) */
+  function sweepBadges(){
+    document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function(a){
+      if(a.isConnected) hideBadge(a);
+    });
+  }
 
-  /* ── Observer: re-check whenever React mutates the DOM ── */
-  var dbt=null;
-  var obs=new MutationObserver(function(){
+  function run(){
+    sweepBadges();
+    inject();
+  }
+
+  /* Poll */
+  var attempts = 0;
+  var poll = setInterval(function(){
+    attempts++;
+    run();
+    if(document.getElementById('back-home-btn') || attempts >= 80){
+      clearInterval(poll);
+    }
+  }, 100);
+
+  /* Observer */
+  var dbt = null;
+  new MutationObserver(function(){
     clearTimeout(dbt);
-    dbt=setTimeout(ensureButtonAtBottom,80);
-  });
-  obs.observe(document.body,{childList:true,subtree:true});
+    dbt = setTimeout(function(){
+      sweepBadges();
+      if(!document.getElementById('back-home-btn')) inject();
+    }, 80);
+  }).observe(document.body, {childList:true, subtree:true});
 
 })();
 </script>
 </body></html>
+
