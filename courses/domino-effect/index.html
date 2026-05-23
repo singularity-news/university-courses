@@ -53,17 +53,10 @@
         top: 0px;
       }
 
-      /* ── Hide Mindsmith "Built with" badge ── */
-      a[href*="mindsmith.ai"],
-      a[href*="utm_source=powered_by_badge"],
-      [class*="powered"],
-      [class*="Powered"],
-      [class*="built-with"],
-      [class*="BuiltWith"],
-      [class*="badge"] {
+      /* ── Hide Mindsmith badge – only target anchor links to mindsmith.ai ── */
+      a[href*="mindsmith.ai"] {
         display: none !important;
         visibility: hidden !important;
-        opacity: 0 !important;
         pointer-events: none !important;
       }
 
@@ -98,31 +91,35 @@
 <!-- Remove Mindsmith badge + inject Back Home button -->
 <script>
 (function () {
+  'use strict';
 
-  /* ── 1. Remove "Built with mindsmith" badge ── */
+  var HOME_URL = "https://singularity41.wordpress.com/";
+
+  /* ── 1. Badge removal – ONLY targets <a> links pointing to mindsmith.ai ──
+     No broad DOM queries that could accidentally remove React-rendered content. */
   function removeBadge() {
-    // Remove any <a> linking to mindsmith.ai or the powered_by_badge param
-    document.querySelectorAll('a[href*="mindsmith.ai"], a[href*="powered_by_badge"]').forEach(function (el) {
-      // Walk up to remove the nearest containing wrapper if small
-      var parent = el.parentElement;
-      if (parent && parent !== document.body && parent.children.length === 1) {
-        parent.remove();
-      } else {
-        el.remove();
-      }
-    });
-    // Also remove by common text content
-    document.querySelectorAll('a, span, div, p').forEach(function (el) {
-      if (el.textContent && el.textContent.trim().toLowerCase().indexOf('built with') !== -1 &&
-          el.innerHTML && el.innerHTML.toLowerCase().indexOf('mindsmith') !== -1) {
-        el.remove();
-      }
-    });
+    try {
+      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (el) {
+        try {
+          var parent = el.parentElement;
+          // Only remove the parent wrapper if it is a leaf container (1 child)
+          // and is NOT the React root or body
+          if (
+            parent &&
+            parent !== document.body &&
+            parent.id !== 'root' &&
+            parent.children.length === 1
+          ) {
+            parent.remove();
+          } else {
+            el.remove();
+          }
+        } catch (e) { /* ignore per-element errors */ }
+      });
+    } catch (e) { /* ignore */ }
   }
 
   /* ── 2. Back Home button ── */
-  var HOME_URL = "https://singularity41.wordpress.com/";
-
   var SIDEBAR_SELECTORS = [
     '[class*="sidebar"]',
     '[class*="Sidebar"]',
@@ -143,15 +140,21 @@
     a.rel = "noopener noreferrer";
     a.setAttribute("aria-label", "Back to Home");
     a.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"' +
+      ' stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
       '<span>Back Home</span>';
     return a;
   }
 
   function findSidebar() {
     for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
-      var el = document.querySelector(SIDEBAR_SELECTORS[i]);
-      if (el) return el;
+      try {
+        var el = document.querySelector(SIDEBAR_SELECTORS[i]);
+        if (el) return el;
+      } catch (e) { /* ignore invalid selector */ }
     }
     return null;
   }
@@ -164,22 +167,26 @@
     sidebar.appendChild(createButton());
   }
 
+  /* Poll for sidebar – stops as soon as button is in DOM */
   var attempts = 0;
-  var maxAttempts = 60;
   var timer = setInterval(function () {
     attempts++;
     inject();
-    if (document.getElementById("back-home-btn") || attempts >= maxAttempts) {
+    if (document.getElementById("back-home-btn") || attempts >= 60) {
       clearInterval(timer);
     }
   }, 100);
 
-  // Keep watching – badge may re-render after route changes
+  /* MutationObserver – debounced so it never blocks React's render loop */
+  var debounceTimer = null;
   var observer = new MutationObserver(function () {
-    removeBadge();
-    if (!document.getElementById("back-home-btn")) {
-      inject();
-    }
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      removeBadge();
+      if (!document.getElementById("back-home-btn")) {
+        inject();
+      }
+    }, 150);
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
