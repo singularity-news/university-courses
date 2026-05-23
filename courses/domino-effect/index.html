@@ -1,4 +1,3 @@
-
 <!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>The Domino Effect: Territorial Expansion Through Networked Infrastructure</title>
 
 <!-- SEO Meta Tags -->
@@ -61,75 +60,49 @@
         pointer-events: none !important;
       }
 
-      /* Back Home Button */
+      /* Back Home – styled as a native sidebar nav item */
       #back-home-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         width: 100%;
         box-sizing: border-box;
         padding: 10px 16px;
         background: transparent;
         border: none;
-        border-top: 1px solid rgba(255,255,255,0.15);
         color: inherit;
         font: inherit;
-        font-size: 0.9em;
+        font-size: inherit;
         text-decoration: none;
         cursor: pointer;
         text-align: left;
-        transition: background 0.2s ease;
-        margin-top: auto;
+        opacity: 0.85;
+        transition: opacity 0.2s ease, background 0.2s ease;
       }
       #back-home-btn:hover {
-        background: rgba(255,255,255,0.1);
+        opacity: 1;
+        background: rgba(255,255,255,0.08);
       }
       #back-home-btn svg {
         flex-shrink: 0;
-        opacity: 0.85;
+      }
+      /* Wrapper <li> if injected into a list */
+      #back-home-li {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border-top: 1px solid rgba(255,255,255,0.12);
       }
 </style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
 
-<!-- Back Home Button + safe badge remover -->
+<!-- Back Home button injected into sidebar nav list -->
 <script>
 (function () {
+  'use strict';
+
   var HOME_URL = "https://singularity41.wordpress.com/";
 
-  var SIDEBAR_SELECTORS = [
-    '[class*="sidebar"]',
-    '[class*="Sidebar"]',
-    '[class*="side-bar"]',
-    '[class*="side_bar"]',
-    '[class*="nav-panel"]',
-    '[class*="NavPanel"]',
-    '[class*="menu"]',
-    'nav',
-    '[role="navigation"]'
-  ];
-
-  function createButton() {
-    var a = document.createElement("a");
-    a.id = "back-home-btn";
-    a.href = HOME_URL;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.setAttribute("aria-label", "Back to Home");
-    a.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' +
-      '<span>Back Home</span>';
-    return a;
-  }
-
-  function findSidebar() {
-    for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
-      try {
-        var el = document.querySelector(SIDEBAR_SELECTORS[i]);
-        if (el) return el;
-      } catch (e) {}
-    }
-    return null;
-  }
-
+  /* ── Badge removal (hide only, no DOM removal) ── */
   function removeBadge() {
     try {
       document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
@@ -142,36 +115,101 @@
     } catch (e) {}
   }
 
-  function inject() {
-    removeBadge();
-    if (document.getElementById("back-home-btn")) return;
-    var sidebar = findSidebar();
-    if (!sidebar) return;
-    sidebar.appendChild(createButton());
+  /* ── Create the Back Home anchor ── */
+  function createButton() {
+    var a = document.createElement('a');
+    a.id     = 'back-home-btn';
+    a.href   = HOME_URL;
+    a.target = '_blank';
+    a.rel    = 'noopener noreferrer';
+    a.setAttribute('aria-label', 'Back to Home');
+    a.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2"' +
+      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+      '<span>Back Home</span>';
+    return a;
   }
 
-  /* Poll until sidebar is rendered by React */
+  /*
+   * findNavContainer – tries to find the innermost nav list inside the sidebar.
+   * Priority order:
+   *   1. A <ul> or <ol> inside a sidebar/nav element (most likely the menu list)
+   *   2. The sidebar/nav element itself
+   * Never returns <body>, #root, or the document element.
+   */
+  var SIDEBAR_SELECTORS = [
+    '[class*="sidebar"]', '[class*="Sidebar"]',
+    '[class*="side-bar"]', '[class*="side_bar"]',
+    '[class*="nav-panel"]', '[class*="NavPanel"]',
+    '[class*="drawer"]',   '[class*="Drawer"]',
+    'nav', '[role="navigation"]'
+  ];
+
+  function findNavContainer() {
+    for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
+      try {
+        var sidebar = document.querySelector(SIDEBAR_SELECTORS[i]);
+        if (!sidebar) continue;
+
+        // Prefer the innermost <ul> or <ol> inside the sidebar
+        var list = sidebar.querySelector('ul, ol');
+        if (list) return { container: list, asList: true };
+
+        // Fall back to the sidebar element itself
+        return { container: sidebar, asList: false };
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  /* ── Inject button into nav container ── */
+  function inject() {
+    removeBadge();
+    if (document.getElementById('back-home-btn')) return;
+
+    var found = findNavContainer();
+    if (!found) return;
+
+    var btn = createButton();
+
+    if (found.asList) {
+      // Wrap in <li> to match sibling items
+      var li = document.createElement('li');
+      li.id = 'back-home-li';
+      li.appendChild(btn);
+      found.container.appendChild(li);
+    } else {
+      found.container.appendChild(btn);
+    }
+  }
+
+  /* ── Poll until React has rendered the sidebar ── */
   var attempts = 0;
-  var timer = setInterval(function () {
+  var pollTimer = setInterval(function () {
     attempts++;
     inject();
-    if (document.getElementById("back-home-btn") || attempts >= 60) {
-      clearInterval(timer);
+    if (document.getElementById('back-home-btn') || attempts >= 60) {
+      clearInterval(pollTimer);
     }
   }, 100);
 
-  /* Watch for DOM changes (debounced) */
+  /* ── MutationObserver (debounced) – re-injects if React re-renders sidebar ── */
   var debounceTimer = null;
   var observer = new MutationObserver(function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function () {
       removeBadge();
-      if (!document.getElementById("back-home-btn")) inject();
+      if (!document.getElementById('back-home-btn')) inject();
     }, 150);
   });
+
   observer.observe(document.body, { childList: true, subtree: true });
 
 })();
 </script>
 
 </body></html>
+
