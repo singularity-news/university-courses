@@ -1,3 +1,4 @@
+
 <!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>International Law, Treaty Systems, and Global Governance</title>
 
 <!-- SEO Meta Tags -->
@@ -31,7 +32,13 @@
         pointer-events:none!important;
       }
 
-      /* Back Home button */
+      /* Back Home – last item inside sidebar list, no fixed/absolute positioning */
+      #back-home-li{
+        list-style:none;
+        margin:0;
+        padding:0;
+        border-top:1px solid rgba(255,255,255,0.15);
+      }
       #back-home-btn{
         display:flex!important;
         align-items:center;
@@ -47,9 +54,7 @@
         cursor:pointer;
         text-align:left;
         opacity:0.85;
-        flex-shrink:0;
         border:none;
-        border-top:1px solid rgba(255,255,255,0.15);
         transition:opacity .2s, background .2s;
       }
       #back-home-btn:hover{opacity:1;background:rgba(255,255,255,0.08)}
@@ -67,98 +72,101 @@
   'use strict';
   var HOME_URL = "https://singularity41.wordpress.com/";
 
-  function createButton(){
+  /* Hide badge – never remove, never touch its parent */
+  function sweepBadges(){
+    try{
+      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function(a){
+        try{
+          if(!a.isConnected) return;
+          a.style.setProperty('display','none','important');
+          a.style.setProperty('visibility','hidden','important');
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+
+  /* Create <li> wrapping the <a> button */
+  function createItem(){
+    var li = document.createElement('li');
+    li.id = 'back-home-li';
     var a = document.createElement('a');
     a.id = 'back-home-btn';
     a.href = HOME_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.setAttribute('aria-label', 'Back to Home');
+    a.setAttribute('aria-label','Back to Home');
     a.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
-      ' fill="none" stroke="currentColor" stroke-width="2"' +
-      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
-      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"'+
+      ' fill="none" stroke="currentColor" stroke-width="2"'+
+      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'+
+      '<polyline points="9 22 9 12 15 12 15 22"/></svg>'+
       '<span>Back Home</span>';
-    return a;
-  }
-
-  function hideBadge(a){
-    a.style.setProperty('display','none','important');
-    a.style.setProperty('visibility','hidden','important');
+    li.appendChild(a);
+    return li;
   }
 
   /*
-   * Strategy: the Mindsmith badge <a href*="mindsmith.ai"> is already
-   * rendered at the very bottom of the sidebar by Mindsmith itself.
-   * We replace it in-place with our Back Home button.
-   * This guarantees the button ends up exactly where the badge was – bottom.
-   *
-   * Fallback: if badge not found yet, append to the last known sidebar el.
+   * Find the sidebar <ul> that contains the lesson index.
+   * Only sidebar/nav elements – never body, never #root directly.
    */
-  function inject(){
-    if(document.getElementById('back-home-btn')) return;
+  var SELECTORS = [
+    '[class*="sidebar"]','[class*="Sidebar"]',
+    '[class*="side-bar"]','[class*="side_bar"]',
+    '[class*="nav-panel"]','[class*="NavPanel"]',
+    '[class*="drawer"]','[class*="Drawer"]',
+    'nav','[role="navigation"]'
+  ];
 
-    // PRIMARY: find the badge and replace it in-place
-    var badge = document.querySelector('a[href*="mindsmith.ai"]');
-    if(badge){
-      hideBadge(badge);
-      var btn = createButton();
-      // Insert our button right before the (now hidden) badge
-      badge.parentNode.insertBefore(btn, badge);
-      return;
-    }
-
-    // FALLBACK: badge not rendered yet – append to sidebar container
-    var SELECTORS = [
-      '[class*="sidebar"]','[class*="Sidebar"]',
-      '[class*="side-bar"]','[class*="side_bar"]',
-      '[class*="nav-panel"]','[class*="NavPanel"]',
-      '[class*="drawer"]','[class*="Drawer"]',
-      'nav','[role="navigation"]'
-    ];
+  function findNavList(){
     for(var i=0; i<SELECTORS.length; i++){
       try{
-        var el = document.querySelector(SELECTORS[i]);
-        if(el){ el.appendChild(createButton()); return; }
+        var sidebar = document.querySelector(SELECTORS[i]);
+        if(!sidebar) continue;
+        var ul = sidebar.querySelector('ul,ol');
+        if(ul) return ul;
       }catch(e){}
+    }
+    return null;
+  }
+
+  /*
+   * Ensure our <li> is always the LAST child of the nav <ul>.
+   * Called on every DOM mutation so React can never push it upward.
+   * NO fallback outside the sidebar – if not found, do nothing.
+   */
+  function ensureLast(){
+    sweepBadges();
+    var ul = findNavList();
+    if(!ul) return;                          // sidebar not open/rendered yet → wait
+
+    var li = document.getElementById('back-home-li');
+    if(li){
+      if(ul.lastElementChild !== li){
+        ul.appendChild(li);                  // React added items after us → move back
+      }
+    } else {
+      ul.appendChild(createItem());          // first injection
     }
   }
 
-  /* Hide any badge that appears (even after re-renders) */
-  function sweepBadges(){
-    document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function(a){
-      if(a.isConnected) hideBadge(a);
-    });
-  }
-
-  function run(){
-    sweepBadges();
-    inject();
-  }
-
-  /* Poll */
+  /* Poll until sidebar is rendered */
   var attempts = 0;
   var poll = setInterval(function(){
     attempts++;
-    run();
-    if(document.getElementById('back-home-btn') || attempts >= 80){
+    ensureLast();
+    if(document.getElementById('back-home-li') || attempts >= 80){
       clearInterval(poll);
     }
   }, 100);
 
-  /* Observer */
+  /* Observer – re-runs ensureLast whenever React mutates the DOM */
   var dbt = null;
   new MutationObserver(function(){
     clearTimeout(dbt);
-    dbt = setTimeout(function(){
-      sweepBadges();
-      if(!document.getElementById('back-home-btn')) inject();
-    }, 80);
+    dbt = setTimeout(ensureLast, 80);
   }).observe(document.body, {childList:true, subtree:true});
 
 })();
 </script>
 </body></html>
-
