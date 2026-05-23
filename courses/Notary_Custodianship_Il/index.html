@@ -1,3 +1,4 @@
+
 <!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Notary Custodianship in International Law</title>
 
 <!-- SEO Meta Tags -->
@@ -14,29 +15,17 @@
           link.as = "font";
           link.crossOrigin = "anonymous";
 
-          // Determine font type from file extension
           const ext = url.split(".").pop().toLowerCase();
           switch (ext) {
-            case "woff":
-              link.type = "font/woff";
-              break;
-            case "woff2":
-              link.type = "font/woff2";
-              break;
-            case "ttf":
-              link.type = "font/ttf";
-              break;
-            case "otf":
-              link.type = "font/otf";
-              break;
-            default:
-              link.type = "font/ttf";
+            case "woff":   link.type = "font/woff";  break;
+            case "woff2":  link.type = "font/woff2"; break;
+            case "ttf":    link.type = "font/ttf";   break;
+            case "otf":    link.type = "font/otf";   break;
+            default:       link.type = "font/ttf";
           }
-
           head.appendChild(link);
         });
       }
-
       preloadFonts(fontsList);</script><style>body,
       html {
         margin: 0;
@@ -60,16 +49,17 @@
         pointer-events: none !important;
       }
 
-      /* Back Home – styled as native sidebar nav item */
+      /* Back Home Button – sits at very bottom of sidebar */
       #back-home-btn {
-        display: flex;
+        display: flex !important;
         align-items: center;
         gap: 10px;
         width: 100%;
         box-sizing: border-box;
-        padding: 10px 16px;
+        padding: 12px 16px;
         background: transparent;
         border: none;
+        border-top: 1px solid rgba(255,255,255,0.15);
         color: inherit;
         font: inherit;
         font-size: inherit;
@@ -78,6 +68,9 @@
         text-align: left;
         opacity: 0.85;
         transition: opacity 0.2s ease, background 0.2s ease;
+        /* Push to bottom of flex sidebar */
+        margin-top: auto;
+        flex-shrink: 0;
       }
       #back-home-btn:hover {
         opacity: 1;
@@ -86,22 +79,16 @@
       #back-home-btn svg {
         flex-shrink: 0;
       }
-      #back-home-li {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        border-top: 1px solid rgba(255,255,255,0.12);
-      }
 </style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
 
-<!-- Back Home button injected into sidebar nav list -->
+<!-- Back Home button – always last child of sidebar container -->
 <script>
 (function () {
   'use strict';
 
   var HOME_URL = "https://singularity41.wordpress.com/";
 
-  /* ── Badge removal (hide only, no DOM removal) ── */
+  /* ── Badge removal ── */
   function removeBadge() {
     try {
       document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
@@ -114,7 +101,7 @@
     } catch (e) {}
   }
 
-  /* ── Create the Back Home anchor ── */
+  /* ── Create button ── */
   function createButton() {
     var a = document.createElement('a');
     a.id     = 'back-home-btn';
@@ -132,7 +119,7 @@
     return a;
   }
 
-  /* ── Find innermost nav list inside sidebar ── */
+  /* ── Find the sidebar CONTAINER (not the inner <ul>) ── */
   var SIDEBAR_SELECTORS = [
     '[class*="sidebar"]', '[class*="Sidebar"]',
     '[class*="side-bar"]', '[class*="side_bar"]',
@@ -141,54 +128,54 @@
     'nav', '[role="navigation"]'
   ];
 
-  function findNavContainer() {
+  function findSidebar() {
     for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
       try {
-        var sidebar = document.querySelector(SIDEBAR_SELECTORS[i]);
-        if (!sidebar) continue;
-        var list = sidebar.querySelector('ul, ol');
-        if (list) return { container: list, asList: true };
-        return { container: sidebar, asList: false };
+        var el = document.querySelector(SIDEBAR_SELECTORS[i]);
+        if (el) return el;
       } catch (e) {}
     }
     return null;
   }
 
-  /* ── Inject button as last item in nav list ── */
-  function inject() {
+  /* ── Ensure button is always the LAST child of the sidebar ── */
+  function ensureButtonAtBottom() {
     removeBadge();
-    if (document.getElementById('back-home-btn')) return;
-    var found = findNavContainer();
-    if (!found) return;
-    var btn = createButton();
-    if (found.asList) {
-      var li = document.createElement('li');
-      li.id = 'back-home-li';
-      li.appendChild(btn);
-      found.container.appendChild(li);
+
+    var sidebar = findSidebar();
+    if (!sidebar) return;
+
+    var existing = document.getElementById('back-home-btn');
+
+    if (existing) {
+      // If already last child of this sidebar, nothing to do
+      if (sidebar.lastElementChild === existing) return;
+      // Otherwise move it to the end
+      sidebar.appendChild(existing);
     } else {
-      found.container.appendChild(btn);
+      // First injection
+      sidebar.appendChild(createButton());
     }
   }
 
-  /* ── Poll until React has rendered the sidebar ── */
+  /* ── Poll until sidebar is rendered ── */
   var attempts = 0;
   var pollTimer = setInterval(function () {
     attempts++;
-    inject();
+    ensureButtonAtBottom();
     if (document.getElementById('back-home-btn') || attempts >= 60) {
       clearInterval(pollTimer);
     }
   }, 100);
 
-  /* ── MutationObserver (debounced) ── */
+  /* ── MutationObserver: re-check position on every DOM change ──
+     This catches React re-rendering new items after the button */
   var debounceTimer = null;
   var observer = new MutationObserver(function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function () {
-      removeBadge();
-      if (!document.getElementById('back-home-btn')) inject();
-    }, 150);
+      ensureButtonAtBottom();
+    }, 100);
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
@@ -197,4 +184,3 @@
 </script>
 
 </body></html>
-
