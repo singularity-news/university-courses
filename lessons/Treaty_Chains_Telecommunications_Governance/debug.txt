@@ -1,0 +1,6 @@
+Date Built: 2026-05-23T05:17:59.296Z
+    
+VERCEL_GIT_COMMIT_SHA: 86a4c88daca8d04980dfb6bffae71883efa65011
+VERCEL_GIT_COMMIT_MESSAGE: Merge pull request #3934 from MindsmithAI/update-video-posthog-event
+
+Update video posthog event
