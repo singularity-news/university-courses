@@ -1,3 +1,4 @@
+
 <!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>The Domino Effect: Territorial Expansion Through Networked Infrastructure</title>
 
 <!-- SEO Meta Tags -->
@@ -53,7 +54,7 @@
         top: 0px;
       }
 
-      /* Hide Mindsmith badge via CSS as first line of defence */
+      /* Hide Mindsmith badge */
       a[href*="mindsmith.ai"] {
         display: none !important;
         visibility: hidden !important;
@@ -70,15 +71,15 @@
         padding: 10px 16px;
         background: transparent;
         border: none;
-        border-top: 1px solid rgba(0,0,0,0.08);
+        border-top: 1px solid rgba(255,255,255,0.15);
         color: inherit;
         font: inherit;
         font-size: 0.9em;
         text-decoration: none;
         cursor: pointer;
         text-align: left;
-        margin-top: auto;
         transition: background 0.2s ease;
+        margin-top: auto;
       }
       #back-home-btn:hover {
         background: rgba(255,255,255,0.1);
@@ -89,148 +90,88 @@
       }
 </style><link href="course.css" rel="stylesheet"></head><body><script id="lessonscript" data-scorm-version="%DATA_SCORM_VERSION%" src="static-scorm-interface.js"></script><script src="course-data.js"></script><script src="languages.js"></script><script src="static-learner-strings.js"></script><div id="root"></div><script defer="defer" src="course.js"></script>
 
-<!-- Safe badge remover + Back Home injector (crash-safe) -->
+<!-- Back Home Button + safe badge remover -->
 <script>
 (function () {
-  'use strict';
-
-  var HOME_URL        = "https://singularity41.wordpress.com/";
-  var MAX_ATTEMPTS    = 60;
-  var POLL_INTERVAL   = 150;
-  var DEBOUNCE_MS     = 150;
-
-  // ---------- 1) Badge removal ----------
-  // Only hides / removes the concrete <a href*="mindsmith.ai"> elements.
-  // Never touches parent containers. Never walks into React-controlled DOM.
-  function removeMindsmithAnchors() {
-    try {
-      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
-        try {
-          if (!a.isConnected) return;
-          var root = document.getElementById('root');
-          if (root && root.contains(a)) {
-            // Inside React root → only hide, never remove
-            a.style.setProperty('display',     'none',   'important');
-            a.style.setProperty('visibility',  'hidden', 'important');
-          } else {
-            // Outside React root → safe to remove the element itself
-            a.remove();
-          }
-        } catch (e) {}
-      });
-    } catch (e) {}
-  }
-
-  // ---------- 2) Back Home button ----------
-  function createBackHomeButton() {
-    var a = document.createElement('a');
-    a.id   = 'back-home-btn';
-    a.href = HOME_URL;
-    a.target = '_blank';
-    a.rel    = 'noopener noreferrer';
-    a.setAttribute('aria-label', 'Back to Home');
-    a.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"' +
-      ' fill="none" stroke="currentColor" stroke-width="2"' +
-      ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' +
-      '<polyline points="9 22 9 12 15 12 15 22"/></svg>' +
-      '<span>Back Home</span>';
-    return a;
-  }
+  var HOME_URL = "https://singularity41.wordpress.com/";
 
   var SIDEBAR_SELECTORS = [
-    '[class*="sidebar"]', '[class*="Sidebar"]',
-    '[class*="side-bar"]', '[class*="side_bar"]',
-    '[class*="nav-panel"]', '[class*="NavPanel"]',
-    '[class*="menu"]', 'nav', '[role="navigation"]'
+    '[class*="sidebar"]',
+    '[class*="Sidebar"]',
+    '[class*="side-bar"]',
+    '[class*="side_bar"]',
+    '[class*="nav-panel"]',
+    '[class*="NavPanel"]',
+    '[class*="menu"]',
+    'nav',
+    '[role="navigation"]'
   ];
 
-  function isSafeSidebar(el) {
-    if (!el || el.nodeType !== 1) return false;
-    if (el === document.body) return false;
-    if (el.hasAttribute('data-reactroot')) return false;
-    if (el.getAttribute('role') === 'application') return false;
-    // Must not be the React root itself or contain it
-    var root = document.getElementById('root');
-    if (root && (el === root || el.contains(root))) return false;
-    return true;
+  function createButton() {
+    var a = document.createElement("a");
+    a.id = "back-home-btn";
+    a.href = HOME_URL;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.setAttribute("aria-label", "Back to Home");
+    a.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' +
+      '<span>Back Home</span>';
+    return a;
   }
 
   function findSidebar() {
     for (var i = 0; i < SIDEBAR_SELECTORS.length; i++) {
       try {
         var el = document.querySelector(SIDEBAR_SELECTORS[i]);
-        if (el && isSafeSidebar(el)) return el;
+        if (el) return el;
       } catch (e) {}
     }
     return null;
   }
 
-  function injectBackHome() {
+  function removeBadge() {
     try {
-      if (document.getElementById('back-home-btn')) return;
-      var btn     = createBackHomeButton();
-      var sidebar = findSidebar();
-
-      if (sidebar) {
-        sidebar.appendChild(btn);
-        return;
-      }
-
-      // Fallback: non-intrusive fixed button in corner (never touches #root)
-      btn.style.position     = 'fixed';
-      btn.style.right        = '12px';
-      btn.style.bottom       = '12px';
-      btn.style.zIndex       = '9999';
-      btn.style.background   = 'rgba(255,255,255,0.95)';
-      btn.style.borderRadius = '8px';
-      btn.style.boxShadow    = '0 4px 14px rgba(0,0,0,0.13)';
-      btn.style.padding      = '8px 14px';
-      document.body.appendChild(btn);
+      document.querySelectorAll('a[href*="mindsmith.ai"]').forEach(function (a) {
+        try {
+          if (!a.isConnected) return;
+          a.style.setProperty('display',    'none',   'important');
+          a.style.setProperty('visibility', 'hidden', 'important');
+        } catch (e) {}
+      });
     } catch (e) {}
   }
 
-  // ---------- 3) Polling ----------
-  var attempts  = 0;
-  var pollTimer = setInterval(function () {
-    attempts++;
-    removeMindsmithAnchors();
-    injectBackHome();
-    if (document.getElementById('back-home-btn') || attempts >= MAX_ATTEMPTS) {
-      clearInterval(pollTimer);
-    }
-  }, POLL_INTERVAL);
+  function inject() {
+    removeBadge();
+    if (document.getElementById("back-home-btn")) return;
+    var sidebar = findSidebar();
+    if (!sidebar) return;
+    sidebar.appendChild(createButton());
+  }
 
-  // ---------- 4) MutationObserver (debounced) ----------
+  /* Poll until sidebar is rendered by React */
+  var attempts = 0;
+  var timer = setInterval(function () {
+    attempts++;
+    inject();
+    if (document.getElementById("back-home-btn") || attempts >= 60) {
+      clearInterval(timer);
+    }
+  }, 100);
+
+  /* Watch for DOM changes (debounced) */
   var debounceTimer = null;
   var observer = new MutationObserver(function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function () {
-      removeMindsmithAnchors();
-      if (!document.getElementById('back-home-btn')) injectBackHome();
-    }, DEBOUNCE_MS);
+      removeBadge();
+      if (!document.getElementById("back-home-btn")) inject();
+    }, 150);
   });
-
-  try {
-    observer.observe(document.documentElement || document.body, {
-      childList: true,
-      subtree: true
-    });
-  } catch (e) {}
-
-  // ---------- 5) Disconnect observer once done ----------
-  var checks    = 0;
-  var watchTimer = setInterval(function () {
-    checks++;
-    if (document.getElementById('back-home-btn') || checks >= 200) {
-      try { observer.disconnect(); } catch (e) {}
-      clearInterval(watchTimer);
-    }
-  }, 200);
+  observer.observe(document.body, { childList: true, subtree: true });
 
 })();
 </script>
 
 </body></html>
-
