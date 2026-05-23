@@ -1,0 +1,6 @@
+Date Built: 2026-05-22T23:45:57.258Z
+    
+VERCEL_GIT_COMMIT_SHA: fa2efbc71754bbe98aa2b43433806a18dae31179
+VERCEL_GIT_COMMIT_MESSAGE: Merge pull request #3772 from MindsmithAI/min-2099-glossary-regional-languages
+
+Fix glossary regional language failures (MIN-2099)
