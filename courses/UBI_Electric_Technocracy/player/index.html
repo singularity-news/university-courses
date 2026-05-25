@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Course Player</title>
+  <script src="scorm-handler.js"></script>
+  <script src="data.js"></script>
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    iframe { width: 100%; height: 100%; border: none; display: block; }
+    .message-screen {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      text-align: center;
+      padding: 60px 40px;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="content-frame" title="Lesson Content" allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope; clipboard-write" allowfullscreen></iframe>
+  <script>
+    (function() {
+      var DEBUG = true;
+
+      function log(message) {
+        if (DEBUG && window.console && window.console.log) {
+          console.log('HTML Launcher: ' + message);
+        }
+      }
+
+      log('HTML Package Launcher started.');
+
+      var contentFrame = document.getElementById('content-frame');
+      var courseData = null;
+      var allLessons = [];
+      var currentLessonIndex = 0;
+      var totalPossiblePoints = 0;
+
+      // Same scoring logic as SCORM
+      var scorableTemplates = ['MultipleChoice', 'TrueOrFalse', 'PieChart', 'Slider', 'SelectImage', 'MissingWords', 'NumberPicker', 'Ratio', 'NumberSentence', 'StrikeOut', 'Hotspot', 'MultipleSelect', 'Dropdown', 'Memory', 'Reorder', 'SelectInOrder', 'SpotTheDifference', 'Timeline', 'Categorization', 'DragDropMatching', 'TrueOrFalseImage', 'SentenceCorrection', 'ImageDragDropLabeling', 'WordSearch', 'LetterJumble', 'TextHighlighter', 'ZoomAndIdentify'];
+
+      var complexScoringTemplates = {
+        'QuickFire': function(slide) { return Math.min(slide.questions.length, slide.numberOfQuestionsToShow); },
+        'MillionaireQuiz': function(slide) { return slide.questions.length; },
+        'Millionaire': function(slide) { return slide.questions.length; },
+        'Bullseye': function(slide) { return slide.questions.length; },
+        'SwipeGame': function(slide) { return slide.cards.length; },
+        'Jeopardy': function(slide) { return slide.categories.reduce(function(acc, cat) { return acc + cat.questions.length; }, 0); },
+        'Elevator': function(slide) { return slide.statements.filter(function(s) { return s.isCorrect; }).length; }
+      };
+
+      function calculateTotalPoints() {
+        totalPossiblePoints = 0;
+        allLessons.forEach(function(lesson) {
+          lesson.slides.forEach(function(slide) {
+            if (complexScoringTemplates[slide.template]) {
+              totalPossiblePoints += complexScoringTemplates[slide.template](slide);
+            } else if (scorableTemplates.indexOf(slide.template) > -1) {
+              totalPossiblePoints += 1;
+            }
+          });
+        });
+        log('Total possible points: ' + totalPossiblePoints);
+        return totalPossiblePoints;
+      }
+
+      function loadLesson(lessonIndex, slideIndex) {
+        log('Loading lesson ' + lessonIndex);
+        currentLessonIndex = lessonIndex;
+
+        var url = 'player-embed.html?lesson_index=' + lessonIndex;
+        if (slideIndex !== undefined) {
+          url += '&initial_location=' + slideIndex;
+        }
+
+        contentFrame.src = url;
+      }
+
+      function showMessage(title, body) {
+        document.body.innerHTML = '<div class="message-screen"><h1>' + title + '</h1><p>' + body + '</p></div>';
+      }
+
+      function init() {
+        log('init() called.');
+
+        if (typeof data === 'undefined') {
+          showMessage('Error', 'Could not load course configuration.');
+          return;
+        }
+
+        log('data.js loaded.');
+
+        if (data.exportMetadata) {
+          console.log('QuikAuthor Export:');
+          console.log('   Export ID:', data.exportMetadata.exportId);
+          console.log('   Export Date:', new Date(data.exportMetadata.exportDate).toLocaleString());
+        }
+
+        courseData = data.course;
+        allLessons = data.lessons;
+        calculateTotalPoints();
+
+        // Initialize handler (HTML export uses localStorage)
+        var initResult = SCORMHandler.init({
+          courseData: courseData,
+          effectiveSettings: courseData.settings || {},
+          totalPossiblePoints: totalPossiblePoints,
+          lessons: allLessons,
+          standardsType: data.standardsType,
+          exportTimestamp: data.exportMetadata ? data.exportMetadata.exportDate : Date.now()
+        });
+
+        log('Handler initialized. Resume - Lesson: ' + initResult.lessonIndex + ', Slide: ' + initResult.slideIndex);
+
+        currentLessonIndex = initResult.lessonIndex || 0;
+        loadLesson(currentLessonIndex, initResult.slideIndex);
+      }
+
+      function handleMessage(event) {
+        var msgData = event.data;
+        if (typeof msgData !== 'object') return;
+
+        log('Message: ' + msgData.type);
+
+        switch (msgData.type) {
+          case 'progress_update':
+            SCORMHandler.updateProgress(currentLessonIndex, msgData.slideIndex);
+            break;
+
+          case 'question_answered':
+            SCORMHandler.recordQuestionAnswer({
+              questionId: msgData.questionId,
+              slideId: msgData.slideId,
+              response: msgData.response,
+              correct: msgData.correct,
+              score: msgData.score,
+              template: msgData.template
+            });
+            break;
+
+          case 'complete_lesson':
+            SCORMHandler.markLessonComplete(currentLessonIndex);
+            log('Lesson marked as complete: ' + currentLessonIndex);
+
+            // If this is the last lesson, complete the course immediately
+            if (currentLessonIndex + 1 >= allLessons.length) {
+              log('Final lesson completed. Marking course as complete.');
+              SCORMHandler.complete(allLessons.length);
+            }
+            break;
+
+          case 'navigate_next':
+            var nextLessonIndex = currentLessonIndex + 1;
+
+            if (nextLessonIndex < allLessons.length) {
+              log('Moving to next lesson: ' + nextLessonIndex);
+              loadLesson(nextLessonIndex, 0);
+            } else {
+              log('All lessons completed. Finalizing course.');
+              var result = SCORMHandler.complete(allLessons.length);
+              if (result) {
+                showMessage(result.title, result.body);
+              }
+            }
+            break;
+
+          case 'navigate_to_lesson':
+            var targetLessonIndex = msgData.lessonIndex;
+            var targetSlideIndex = msgData.slideIndex || 0;
+
+            if (targetLessonIndex >= 0 && targetLessonIndex < allLessons.length) {
+              log('Navigating to lesson: ' + targetLessonIndex + ', slide: ' + targetSlideIndex);
+              loadLesson(targetLessonIndex, targetSlideIndex);
+            } else {
+              log('Invalid lesson index: ' + targetLessonIndex);
+            }
+            break;
+
+          case 'suspend_lesson':
+            // Save state and load exit page into iframe
+            SCORMHandler.suspend(allLessons.length);
+            log('Progress saved via suspend_lesson.');
+            contentFrame.src = 'suspend.html';
+            break;
+        }
+      }
+
+      window.addEventListener('message', handleMessage, false);
+      window.addEventListener('load', init);
+      window.addEventListener('beforeunload', function() {
+        SCORMHandler.suspend(allLessons.length);
+      });
+    })();
+  </script>
+</body>
+</html>
